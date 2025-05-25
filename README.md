@@ -1,7 +1,5 @@
 # MediQuery AI
 
----
-
 ## Transforming Natural Language into Hospital Database Queries
 
 ### Overview
