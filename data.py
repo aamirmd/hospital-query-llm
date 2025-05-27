@@ -27,8 +27,8 @@ def convert_mysql_to_sqlite(sql):
         # Data type conversions
         (r'int\([0-9]+\)', 'INTEGER'),  # MySQL allows size specification for int
         (r'varchar\([0-9]+\)', 'TEXT'),  # SQLite uses dynamic TEXT type
-        (r'decimal(.+)', 'REAL'),  # Convert all decimal variants to REAL
-        (r'double(.+)', 'REAL'),  # Convert all double variants to REAL
+        (r'decimal\(.+\)', 'REAL'),  # Convert all decimal variants to REAL
+        (r'double\(.+\)', 'REAL'),  # Convert all double variants to REAL
         
         # Remove MySQL-specific features
         (r'AUTO_INCREMENT', ''),  # SQLite uses AUTOINCREMENT keyword
@@ -124,6 +124,8 @@ def create_database(db_name='hospital.db', sql_file='hospital.sql'):
             for i, command in enumerate(commands, 1):
                 try:
                     cursor.execute(command)
+                    if command.strip().startswith('CREATE TABLE'):
+                        print(command)
                     successful_commands += 1
                 except sqlite3.Error as e:
                     error_msg = str(e)
