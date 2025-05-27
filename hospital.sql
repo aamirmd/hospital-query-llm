@@ -61,7 +61,7 @@ CREATE TABLE in_out(
 CREATE TABLE inpatients(
 	id 	int PRIMARY KEY AUTO_INCREMENT,
 	p_id INT  REFERENCES patients(p_id),
-	bed_no INT  NOT NULL,
+	bed_id INT  NOT NULL,
 	room_id INT  REFERENCES rooms(room_id),
 	nurse_id INT  REFERENCES nurses(nurse_id),
 	remarks VARCHAR(100)
@@ -229,7 +229,7 @@ INSERT INTO in_out( p_id, from_date, to_date)
 -- 	VALUES( 2001, '11/07/2019', '16/07/2019' );
 
 --DUMMY DATA FOR INPATENTS
-INSERT INTO inpatients( p_id, bed_no, room_id, nurse_id, remarks)
+INSERT INTO inpatients( p_id, bed_id, room_id, nurse_id, remarks)
 	VALUES(2001,6,7,3001,'Recorvering');
 INSERT INTO inpatients( p_id, bed_id, room_id, nurse_id, remarks)
 	VALUES(2009,4,3,3006,'Discharge on 15/02/2019');
