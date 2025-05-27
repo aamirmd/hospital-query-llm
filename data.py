@@ -27,8 +27,8 @@ def convert_mysql_to_sqlite(sql):
         # Data type conversions
         (r'int\([0-9]+\)', 'INTEGER'),  # MySQL allows size specification for int
         (r'varchar\([0-9]+\)', 'TEXT'),  # SQLite uses dynamic TEXT type
-        (r'decimal[^,)]+', 'REAL'),  # Convert all decimal variants to REAL
-        (r'double[^,)]+', 'REAL'),  # Convert all double variants to REAL
+        (r'decimal(.+)', 'REAL'),  # Convert all decimal variants to REAL
+        (r'double(.+)', 'REAL'),  # Convert all double variants to REAL
         
         # Remove MySQL-specific features
         (r'AUTO_INCREMENT', ''),  # SQLite uses AUTOINCREMENT keyword
