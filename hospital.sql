@@ -246,7 +246,7 @@ INSERT INTO rooms(room_name, capacity, status)
 INSERT INTO rooms(room_name, capacity, status)
 	VALUES('Delivery Room', 7, 'Empty');
 INSERT INTO rooms(room_name, capacity, status)
-	VALUES('ICU' 30, '3 Empty Slots');
+	VALUES('ICU', 30, '3 Empty Slots');
 INSERT INTO rooms(room_name, capacity, status)
 	VALUES('Maternity Ward', 30, '18 Empty Slots');
 INSERT INTO rooms(room_name, capacity, status)
