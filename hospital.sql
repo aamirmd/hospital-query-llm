@@ -276,9 +276,9 @@ INSERT INTO consultations(p_id, cons_date, doc_id, remarks)
 INSERT INTO consultations(p_id, cons_date, doc_id, remarks)
 	VALUES(2007,'07/07/2019', 1007,'pain when urinating, burns in the abdomen');
 INSERT INTO consultations(p_id, cons_date, doc_id, remarks)
-	VALUES(2003, 'Stool Test', '23/09/2019', 1004,'Severe stomachace, Headaches');
+	VALUES(2003, '23/09/2019', 1004,'Severe stomachace, Headaches');
 INSERT INTO consultations(p_id, cons_date, doc_id, remarks)
-	VALUES(2008, 'Arthroscopy', '10/05/2019', 1010,'pain in the arm, flammation');
+	VALUES(2008, '10/05/2019', 1010,'pain in the arm, flammation');
 INSERT INTO consultations(p_id, cons_date, doc_id, remarks)
 	VALUES(2009, '01/02/2019', 1001,'Hot nights, stomachace, Headaches');
 INSERT INTO consultations(p_id, cons_date, doc_id, remarks)
