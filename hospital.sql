@@ -92,7 +92,7 @@ CREATE TABLE consultations(
 CREATE TABLE addresses(
 	add_id int PRIMARY KEY AUTO_INCREMENT,
 	user_id int  NOT NULL,
-	city VARCHAR(15),sss
+	city VARCHAR(15),
 	street VARCHAR(30)
 );
 
