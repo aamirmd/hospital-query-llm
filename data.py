@@ -17,22 +17,26 @@ def validate_sql_file(file_path):
         raise DatabaseError(f"SQL file is empty: {file_path}")
 
 def convert_mysql_to_sqlite(sql):
-    """Convert MySQL syntax to SQLite compatible syntax"""
+    """Convert MySQL syntax to SQLite compatible syntax.
+    Handles type conversions, removes MySQL-specific features, and adjusts syntax differences."""
     if not sql.strip():
         raise DatabaseError("Empty SQL script provided")
 
-    # Convert MySQL syntax to SQLite
+    # Each tuple contains (pattern_to_find, replacement_text)
     conversions = [
-        (r'AUTO_INCREMENT', ''),  # Remove AUTO_INCREMENT
-        (r'int\([0-9]+\)', 'INTEGER'),  # Convert int(N) to INTEGER
-        (r'varchar\([0-9]+\)', 'TEXT'),  # Convert varchar(N) to TEXT
-        (r'decimal[^,)]+', 'REAL'),  # Convert decimal types to REAL
-        (r'double[^,)]+', 'REAL'),  # Convert double types to REAL
-        (r'CREATE DATABASE.*?;', ''),  # Remove CREATE DATABASE
-        (r'USE.*?;', ''),  # Remove USE database
-        (r'ENGINE\s*=\s*\w+', ''),  # Remove ENGINE declarations
-        (r'DEFAULT\s+CHARSET\s*=\s*\w+', ''),  # Remove CHARACTER SET declarations
-        (r'COLLATE\s+\w+', ''),  # Remove COLLATE declarations
+        # Data type conversions
+        (r'int\([0-9]+\)', 'INTEGER'),  # MySQL allows size specification for int
+        (r'varchar\([0-9]+\)', 'TEXT'),  # SQLite uses dynamic TEXT type
+        (r'decimal[^,)]+', 'REAL'),  # Convert all decimal variants to REAL
+        (r'double[^,)]+', 'REAL'),  # Convert all double variants to REAL
+        
+        # Remove MySQL-specific features
+        (r'AUTO_INCREMENT', ''),  # SQLite uses AUTOINCREMENT keyword
+        (r'CREATE DATABASE.*?;', ''),  # SQLite is serverless
+        (r'USE.*?;', ''),  # SQLite uses file-based databases
+        (r'ENGINE\s*=\s*\w+', ''),  # SQLite doesn't use storage engines
+        (r'DEFAULT\s+CHARSET\s*=\s*\w+', ''),  # SQLite handles text encoding differently
+        (r'COLLATE\s+\w+', ''),  # SQLite has different collation syntax
     ]
     
     try:
@@ -43,28 +47,30 @@ def convert_mysql_to_sqlite(sql):
         raise DatabaseError(f"Error in SQL conversion: {str(e)}")
 
 def split_sql_commands(sql_script):
-    """Split SQL script into individual commands and validate them"""
+    """Split SQL script into individual commands and validate them.
+    Handles multi-line commands and skips comments."""
     commands = []
     current_command = []
     
-    # Handle both Windows and Unix line endings
+    # Normalize line endings for cross-platform compatibility
     lines = sql_script.replace('\r\n', '\n').split('\n')
     
     for line in lines:
-        # Skip empty lines and comments
         line = line.strip()
+        # Skip comments and empty lines to avoid processing non-SQL content
         if not line or line.startswith('--'):
             continue
             
         current_command.append(line)
         
+        # Complete command found
         if line.endswith(';'):
             command = ' '.join(current_command)
-            if command.strip('; '):  # Only add non-empty commands
+            if command.strip('; '):  # Avoid empty commands
                 commands.append(command)
             current_command = []
     
-    # Check for unfinished commands
+    # Warn about potentially incomplete commands at end of file
     if current_command:
         remaining = ' '.join(current_command)
         if remaining.strip():
@@ -73,43 +79,45 @@ def split_sql_commands(sql_script):
     return commands
 
 def create_database(db_name='hospital.db', sql_file='hospital.sql'):
-    """Create SQLite database from SQL file with enhanced error handling"""
+    """Create SQLite database from SQL file with enhanced error handling.
+    
+    Args:
+        db_name: Name of the SQLite database file to create
+        sql_file: Path to the source SQL file with schema and data
+    """
     db_path = Path(db_name)
     sql_path = Path(sql_file)
     
     try:
-        # Validate SQL file
+        # Initial validation and setup
         validate_sql_file(sql_path)
         
-        # Remove existing database if it exists
+        # Clean up existing database if present
         if db_path.exists():
             try:
                 db_path.unlink()
             except PermissionError:
                 raise DatabaseError(f"Cannot delete existing database {db_name}. File may be in use.")
         
-        # Connect to SQLite database
+        # Initialize database connection
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
         
-        # Enable foreign key support
+        # SQLite foreign keys are disabled by default
         cursor.execute("PRAGMA foreign_keys = ON;")
         
         try:
-            # Read and process the SQL file
+            # Process and execute SQL commands
             with open(sql_path, 'r', encoding='utf-8') as file:
                 sql_script = file.read()
             
-            # Convert MySQL syntax to SQLite
             sql_script = convert_mysql_to_sqlite(sql_script)
-            
-            # Split and validate commands
             commands = split_sql_commands(sql_script)
             
             if not commands:
                 raise DatabaseError("No valid SQL commands found in the file")
             
-            # Execute each command
+            # Execute commands and track progress
             total_commands = len(commands)
             successful_commands = 0
             
@@ -123,7 +131,7 @@ def create_database(db_name='hospital.db', sql_file='hospital.sql'):
                     print(f"Command: {command}")
                     print(f"Error: {error_msg}")
                     
-                    # Specific error handling
+                    # Provide helpful hints for common errors
                     if "syntax error" in error_msg.lower():
                         print("Hint: This appears to be a syntax error. Check the SQL command format.")
                     elif "no such table" in error_msg.lower():
@@ -131,10 +139,9 @@ def create_database(db_name='hospital.db', sql_file='hospital.sql'):
                     elif "foreign key" in error_msg.lower():
                         print("Hint: Foreign key constraint failed. Check referenced table and key.")
             
-            # Commit the changes
             conn.commit()
             
-            # Report results
+            # Report final status
             print(f"\nDatabase creation completed:")
             print(f"- Total commands: {total_commands}")
             print(f"- Successful commands: {successful_commands}")
