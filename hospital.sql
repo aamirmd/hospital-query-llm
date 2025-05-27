@@ -324,6 +324,6 @@ INSERT INTO contacts( user_id, phone, email)
 INSERT INTO contacts( user_id, phone, email)
 	VALUES(4005, '0790984462','example7@gmail.com');
 INSERT INTO contacts( user_id, phone, email)
-	VALUES(1010, '0712678945','example2@gmail.com');
+	VALUES(1010, '0712678945','example3@gmail.com');
 INSERT INTO contacts( user_id, phone, email)
 	VALUES(3003, '0704048484','email@gmail.com');
