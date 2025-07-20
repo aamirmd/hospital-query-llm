@@ -12,7 +12,7 @@ Hospital databases are rich with critical patient information, treatment details
 
 ### Our Solution
 
-MediQuery AI leverages advanced LLM prompt engineering techniques to intelligently parse natural language requests and translate them into accurate SQL queries. Imagine asking, "Show me all patients admitted last week with pneumonia," and instantly getting the corresponding SQL query to run against your hospital's database. This project aims to empower users to interact with healthcare data using the language they already know.
+MediQuery AI leverages advanced LLM prompt engineering techniques to intelligently parse natural language requests and translate them into accurate SQL queries. Imagine asking, "Show me all patients admitted last week with pneumonia," and instantly getting the corresponding SQL query to run against your hospital's database. This project aims to empower users to interact with healthcare data using language familiar to them.
 
 ### Key Features (Planned/In Progress)
 
